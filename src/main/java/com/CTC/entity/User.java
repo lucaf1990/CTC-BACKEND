@@ -51,7 +51,7 @@ public class User {
     private String password;
 
     private Boolean active;
-
+    private String urlImmagineProfilo;
     private Boolean isMember;
     @Column(nullable = false)
 private String phoneNumber;

@@ -25,6 +25,9 @@ public class Court {
     @Column(nullable = false)
     private double price;
 
+    @Column(nullable = false)
+    private double priceSocio;
+    
     @Enumerated(EnumType.STRING)
     private CourtType courtType;
 }

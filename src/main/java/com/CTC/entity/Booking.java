@@ -40,7 +40,6 @@ public class Booking {
     @JsonIgnoreProperties(value = "bookings") // Use this annotation on the child side of the relationship
     private User user;
 
-    private Long userMainId;
     @ManyToOne
     @JoinColumn(name = "court_id", nullable = false)
     private Court court; // Campo prenotato

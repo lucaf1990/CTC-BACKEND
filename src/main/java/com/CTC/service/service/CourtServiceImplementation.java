@@ -62,6 +62,7 @@ public class CourtServiceImplementation {
 	        Court court = new Court();
 	        court.setTypeField(typeField);
 	        court.setPrice(courtPayload.getPrice());
+	        court.setPriceSocio(courtPayload.getPriceSocio());
 	        court.setCourtType(courtType);
 	        court.setCapacity(courtPayload.getCapacity());
 
@@ -79,6 +80,7 @@ public class CourtServiceImplementation {
 		        existingCourt.setPrice(updatedCourt.getPrice());
 		        existingCourt.setCourtType(updatedCourt.getCourtType());
 		        existingCourt.setCapacity(updatedCourt.getCapacity());
+		        existingCourt.setPriceSocio(updatedCourt.getPriceSocio());
 
 		        courtRepository.save(existingCourt);
 		        return existingCourt;
@@ -103,4 +105,23 @@ public class CourtServiceImplementation {
 					throw new MyAPIException(HttpStatus.NOT_FOUND, "Field was not found ");
 				}
 	}
+	
+	
+	public Court changePrice(Long courtId,double price, double priceSocio) {
+		 if (courtRepository.existsById(courtId)) {
+		        Court existingCourt = courtRepository.findById(courtId).orElseThrow();
+		       
+		     
+		        existingCourt.setPrice(price);
+		        existingCourt.setPriceSocio(priceSocio);
+		      
+
+		        courtRepository.save(existingCourt);
+		        return existingCourt;
+		    } else {
+		        throw new MyAPIException(HttpStatus.NOT_FOUND, "Field was not found");
+		    }
+     
+	}
+	
 }

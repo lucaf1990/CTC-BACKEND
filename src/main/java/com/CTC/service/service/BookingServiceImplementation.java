@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.security.auth.login.AccountNotFoundException;
 
+import org.aspectj.bridge.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,11 +53,16 @@ public class BookingServiceImplementation implements BookingService{
 	        // Retrieve the court from the database using the courtId from the DTO
 	        Court court = courtRepository.findById(bookingRequest.getCourtId())
 	                .orElseThrow(() -> new IllegalArgumentException("Court not found with ID: " + bookingRequest.getCourtId()));
-
+	        
 	        User user = userRepository.findById(bookingRequest.getUserId())
 	                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + authService.getCurrentUser().getId()));
-//switch 
-	        BigDecimal totalToPay = totalToPay(court.getPrice(), bookingRequest.getHours());
+	        boolean isModerator = authService.isModerator(user.getId());
+	        BigDecimal totalToPay;
+	        if (isModerator) {
+	            totalToPay = totalToPay(court.getPriceSocio(), bookingRequest.getHours());
+	        } else {
+	            totalToPay = totalToPay(court.getPrice(), bookingRequest.getHours());
+	        }
 
 	        LocalDateTime bookingDateTime = bookingRequest.getBookingDateTime();
 	        if (bookingDateTime.isBefore(LocalDateTime.now())) {
@@ -142,7 +148,7 @@ existingBooking.getUser();
 	        long hoursDifference = ChronoUnit.HOURS.between(currentDateTime, bookingStartDateTime);
 
 	        if (hoursDifference <= 24) {
-	            throw new IllegalArgumentException("The booking cannot be deleted as it starts within the next 24 hours.");
+	            throw new IllegalArgumentException("LE PRENOTAZIONI POSSO ESSERE ELIMINATE ENTRO 24 PRIMA DELL'INIZIO");
 	        }
 
 	        // Delete the associated payment, if it exists
@@ -153,6 +159,7 @@ existingBooking.getUser();
 
 	        // Delete the booking from the database
 	        bookingRepository.delete(existingBooking);
+	 
 	    }
 
 	    public Booking getBookingById(Long bookingId) {
@@ -191,7 +198,13 @@ existingBooking.getUser();
 	            throw new Error("User not found with ID: " + userId);
 	        }
 	    }
-	   
+
+	    public List<Booking> getAllUserBookings() {
+	        
+	       List<Booking> myList= bookingRepository.findAll();
+	            return myList;
+	        
+	    }
 	    public List<Booking> getAllTennisBookings() {
 	        List<Booking> allBookings = bookingRepository.findAll(); // Assuming bookingRepository can retrieve all bookings from the database
 

@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.multipart.MultipartFile;
 
 import com.CTC.entity.User;
 
@@ -50,12 +50,16 @@ public class UserController {
 
 	}
 	@PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE , produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
 	@ResponseBody
 	public ResponseEntity<?> update(@RequestBody User u){
 		return new ResponseEntity<User>(uSer.updateUtente(u),HttpStatus.OK);
 	}
-	
+	@PutMapping("/uploadimage/{id}")	
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
+	public ResponseEntity<?> updateEvento(@PathVariable Long id,@RequestParam("file") MultipartFile file){
+		return new ResponseEntity<User>(uSer.updateUtenteImage(id, file),HttpStatus.OK);
+	}
 	
 
 }

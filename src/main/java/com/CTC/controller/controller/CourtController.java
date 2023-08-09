@@ -25,26 +25,26 @@ public class CourtController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Court> createCourt(@RequestBody CourtDTO courtPayload) {
         Court createdCourt = courtService.createCourt(courtPayload);
         return new ResponseEntity<>(createdCourt, HttpStatus.CREATED);
     }
 
     @PutMapping("/{courtId}")
-    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Court> updateCourt(@PathVariable Long courtId, @RequestBody Court updatedCourt) {
         Court updated = courtService.updateCourt(courtId, updatedCourt);
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
-    @PutMapping("/cambiaPrezzo/{courtId}")
+    @PutMapping("/cambiaPrezzi/{courtId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> changeCourtPrice(@PathVariable Long courtId, @PathVariable Double price) {
-        String updated = courtService.changeCourtHoursPrice(courtId, price );
-        return new ResponseEntity<String>(updated, HttpStatus.OK);
+    public ResponseEntity<Court> changeCourtPrice(@PathVariable Long courtId, @PathVariable Double price,@PathVariable Double priceSocio) {
+        Court updated = courtService.changePrice(courtId, price,priceSocio );
+        return new ResponseEntity<Court>(updated, HttpStatus.OK);
     }
     @DeleteMapping("/{courtId}")
-    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteCourt(@PathVariable Long courtId) {
         courtService.deleteCourt(courtId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

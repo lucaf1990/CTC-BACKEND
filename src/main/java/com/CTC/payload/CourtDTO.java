@@ -24,6 +24,7 @@ public class CourtDTO {
 	  private TypeField typeField;
 	    private Long capacity;  
 	    private double price;
+	    private double priceSocio;
 	    private CourtType court;
 private 	    Long courtId;
 }

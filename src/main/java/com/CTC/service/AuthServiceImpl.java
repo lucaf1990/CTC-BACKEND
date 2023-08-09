@@ -1,5 +1,6 @@
 package com.CTC.service;
 
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -14,8 +15,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.CTC.entity.ERole;
+import com.CTC.entity.Image;
 import com.CTC.entity.Role;
 import com.CTC.entity.User;
 import com.CTC.exception.MyAPIException;
@@ -23,7 +26,9 @@ import com.CTC.payload.LoginDto;
 import com.CTC.payload.RegisterDto;
 import com.CTC.repository.RoleRepository;
 import com.CTC.repository.UserRepository;
+import com.CTC.repository.repository.ImageRepository;
 import com.CTC.security.JwtTokenProvider;
+import com.CTC.service.service.ImageService;
 
 
 @Service
@@ -34,7 +39,10 @@ public class AuthServiceImpl implements AuthService {
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
     private JwtTokenProvider jwtTokenProvider;
-
+ 
+	@Autowired
+	ImageService imageService;
+private ImageRepository imageRepo;
 
     public AuthServiceImpl(AuthenticationManager authenticationManager,
                            UserRepository userRepository,
@@ -151,5 +159,27 @@ public class AuthServiceImpl implements AuthService {
 	public List<User> findAllUtente() {
 		return userRepository.findAll();
 	}
+	public User updateUtenteImage(Long iduser, MultipartFile file) {
+		if(userRepository.existsById(iduser)) {
+		Image i = (Image) imageService.saveImage(file);
+		User u = userRepository.findById(iduser).get();
+		u.setUrlImmagineProfilo(i.getUrl());
+		
+		return userRepository.save(u);}
+		else {
+			throw new MyAPIException(HttpStatus.NOT_FOUND, "utente non trovato");
+		}
+	}
 	
+	public boolean isModerator(Long id) {
+	    User user = userRepository.findById(id).orElse(null); 
+	    if (user != null && user.getRoles() != null) {
+	        for (Role role : user.getRoles()) {
+	            if ("ROLE_MODERATOR".equals(role.getRoleName())) {
+	                return true;
+	            }
+	        }
+	    }
+	    return false;
+	}
 }

@@ -28,55 +28,61 @@ public class BookingController {
     }
 
     @PostMapping("/create")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('MODERATOR')")
     public ResponseEntity<Booking> createBooking(@RequestBody BookingDTO bookingRequest) {
         Booking createdBooking = bookingService.createBooking(bookingRequest);
         return new ResponseEntity<>(createdBooking, HttpStatus.CREATED);
     }
 
-    @PutMapping(value={"/{bookingId}"},consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE )
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('USER')")
+    @PutMapping(value={"/{bookingId}"},consumes = MediaType.APPLICATION_JSON_VALUE , produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
     public ResponseEntity<Booking> updateBooking(@PathVariable Long bookingId, @RequestBody Booking updatedBooking) {
         updatedBooking.setId(bookingId); // Set the ID from the path variable to the updated booking object
         Booking updated = bookingService.updateBooking(updatedBooking);
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{bookingId}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('USER')")
+    @DeleteMapping("/delete/{bookingId}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
     public ResponseEntity<Void> deleteBooking(@PathVariable Long bookingId) {
         bookingService.deleteBooking(bookingId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<Void>( HttpStatus.OK);
     }
 
     @GetMapping("/{bookingId}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
     public ResponseEntity<Booking> getSpecificBooking(@PathVariable Long bookingId) {
         Booking booking = bookingService.getBookingById(bookingId);
         return new ResponseEntity<>(booking, HttpStatus.OK);
     }
     @GetMapping("/all/tennis")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
     public ResponseEntity<List<Booking>> getAll (){
         List<Booking> booking = bookingService.getAllTennisBookings();
         return new ResponseEntity<>(booking, HttpStatus.OK);
     }
     @GetMapping("/all/calcetto")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
     public ResponseEntity<List<Booking>> getAllCalcetto (){
         List<Booking> booking = bookingService.getAllCalcettoBookings();
         return new ResponseEntity<>(booking, HttpStatus.OK);
     }
     @GetMapping("/all/beachVolley")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
     public ResponseEntity<List<Booking>> getAllBeach (){
         List<Booking> booking = bookingService.getAllBeachVolleyBookings();
         return new ResponseEntity<>(booking, HttpStatus.OK);
     }
     @GetMapping(value={"/all/{userId}"},consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
     public ResponseEntity<List<Booking>> getAllBookings(@PathVariable Long userId){
         List<Booking> bookings = bookingService.getAllBookings(userId);
+        return new ResponseEntity<>(bookings, HttpStatus.OK);
+    }
+    @GetMapping("/allUsersBookings")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Booking>> getAllBookings(){
+        List<Booking> bookings = bookingService.getAllUserBookings();
         return new ResponseEntity<>(bookings, HttpStatus.OK);
     }
 }
