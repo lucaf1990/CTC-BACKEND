@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.CTC.entity.Booking;
 import com.CTC.payload.BookingDTO;
+import com.CTC.payload.BookingDTO2;
 import com.CTC.service.service.BookingServiceImplementation;
 
 
@@ -33,7 +34,15 @@ public class BookingController {
         Booking createdBooking = bookingService.createBooking(bookingRequest);
         return new ResponseEntity<>(createdBooking, HttpStatus.CREATED);
     }
-
+    @PostMapping("/admin/create")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Booking> createAdminBooking(
+        @RequestBody BookingDTO2 bookingRequest
+      
+    ) {
+        Booking createdBookingAdmin = bookingService.createBookingAdmin(bookingRequest);
+        return new ResponseEntity<>(createdBookingAdmin, HttpStatus.CREATED);
+    }
     @PutMapping(value={"/{bookingId}"},consumes = MediaType.APPLICATION_JSON_VALUE , produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
     public ResponseEntity<Booking> updateBooking(@PathVariable Long bookingId, @RequestBody Booking updatedBooking) {
@@ -46,6 +55,12 @@ public class BookingController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
     public ResponseEntity<Void> deleteBooking(@PathVariable Long bookingId) {
         bookingService.deleteBooking(bookingId);
+        return new ResponseEntity<Void>( HttpStatus.OK);
+    }
+    @DeleteMapping("/delete/admin/{bookingId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteBookingAdmin(@PathVariable Long bookingId) {
+        bookingService.deleteBookingAdmin(bookingId);
         return new ResponseEntity<Void>( HttpStatus.OK);
     }
 

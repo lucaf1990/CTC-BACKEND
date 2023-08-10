@@ -21,6 +21,7 @@ import com.CTC.entity.User;
 import com.CTC.enums.CourtType;
 import com.CTC.enums.TypeField;
 import com.CTC.payload.BookingDTO;
+import com.CTC.payload.BookingDTO2;
 import com.CTC.repository.UserRepository;
 import com.CTC.repository.repository.BookingRepository;
 import com.CTC.repository.repository.CourtRepository;
@@ -94,7 +95,55 @@ public class BookingServiceImplementation implements BookingService{
 
 	        return savedBooking;
 	    }
+	    public Booking createBookingAdmin(BookingDTO2 bookingRequest) {
+	        // Retrieve the court from the database using the courtId from the DTO
+	        Court court = courtRepository.findById(bookingRequest.getCourtId())
+	                .orElseThrow(() -> new IllegalArgumentException("Court not found with ID: " + bookingRequest.getCourtId()));
+	        
+	        User user = userRepository.findById(bookingRequest.getUserId())
+	                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + authService.getCurrentUser().getId()));
+	       
+	        BigDecimal totalToPay;
+	        if (bookingRequest.getSocio()) {
+	            totalToPay = totalToPay(court.getPriceSocio(), bookingRequest.getHours());
+	        } else {
+	            totalToPay = totalToPay(court.getPrice(), bookingRequest.getHours());
+	        }
 
+	        LocalDateTime bookingDateTime = bookingRequest.getBookingDateTime();
+	        if (bookingDateTime.isBefore(LocalDateTime.now())) {
+	            throw new IllegalArgumentException("Booking date and time cannot be in the past.");
+	        }
+	
+	       
+
+
+	        // Create a new booking
+	        Booking newBooking = new Booking();
+	        newBooking.setTotalToPay(totalToPay);
+	        newBooking.setCourt(court);
+	        newBooking.setBookingDateTime(bookingDateTime);
+	        newBooking.setBookingEnds(bookingDateTime.plusHours(bookingRequest.getHours()));
+	        newBooking.setConfirmed(true); // You can set the default value for confirmed as needed
+	       
+	    newBooking.setUser(user);
+	        newBooking.setHours(bookingRequest.getHours());
+	        newBooking.setNotePrenotazione(bookingRequest.getNotePrenotazione());
+
+	        // Check for booking conflicts before saving the booking
+	        if (isBookingConflict(newBooking)) {
+	            throw new IllegalArgumentException("Booking conflict detected");
+	        }
+
+	        // Save the booking to the database
+	        Booking savedBooking = bookingRepository.save(newBooking);
+
+	        // Create and save the payment object
+	        Payment payment = paymentService.createPayment(savedBooking);
+	        paymentRepository.save(payment); // Assuming you have a paymentRepository to save the Payment object
+
+	        return savedBooking;
+	    }
 
 
 	    public Booking updateBooking(Booking booking) {
@@ -152,6 +201,23 @@ existingBooking.getUser();
 	        }
 
 	        // Delete the associated payment, if it exists
+	        Payment payment = paymentRepository.findByBookingId(bookingId);
+	        if (payment != null) {
+	            paymentRepository.delete(payment);
+	        }
+
+	        // Delete the booking from the database
+	        bookingRepository.delete(existingBooking);
+	 
+	    }
+	    public void deleteBookingAdmin(Long bookingId) {
+	        // Check if the booking exists in the database
+	        Booking existingBooking = bookingRepository.findById(bookingId)
+	                .orElseThrow(() -> new IllegalArgumentException("Booking not found with ID: " + bookingId));
+
+	    
+	       
+	        
 	        Payment payment = paymentRepository.findByBookingId(bookingId);
 	        if (payment != null) {
 	            paymentRepository.delete(payment);

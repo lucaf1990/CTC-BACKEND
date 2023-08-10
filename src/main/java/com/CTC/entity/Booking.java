@@ -58,5 +58,7 @@ public class Booking {
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	@JsonIgnoreProperties(value = {"bookingReview"})
 	private Set<Reviews> reviews = new HashSet<Reviews>();
+    @Column(length = 2000)
+    private String notePrenotazione;
   
 }
