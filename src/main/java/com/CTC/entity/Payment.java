@@ -7,9 +7,11 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,10 +38,9 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long amountInCents;
-    @ManyToOne
-    @JoinColumn(name = "booking_id", nullable = false)
 
-    private Booking booking; // Riferimento alla prenotazione associata al pagamento
+
+  
 
     @Column(nullable = false)
     private BigDecimal amount; // Importo del pagamento
@@ -52,5 +53,12 @@ public class Payment {
   
     private Long utenteId;
 
-
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties(value = "payments") // Use this annotation on the child side of the relationship
+    private User user;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "booking_id", nullable = false)
+    @JsonIgnoreProperties(value = "payments")
+    private Booking booking;
 }

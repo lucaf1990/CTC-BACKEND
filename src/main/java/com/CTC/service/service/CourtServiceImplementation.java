@@ -1,6 +1,7 @@
 package com.CTC.service.service;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class CourtServiceImplementation {
 	        }
 
 	        // Validate courtType
-	        CourtType courtType = courtPayload.getCourt();
+	        CourtType courtType = courtPayload.getCourtType();
 	        if (courtType == null || !EnumSet.of(CourtType.INDOOR, CourtType.OUTDOOR).contains(courtType)) {
 	            throw new InvalidCourtDataException("Invalid courtType value. Use INDOOR or OUTDOOR.");
 	        }
@@ -106,6 +107,12 @@ public class CourtServiceImplementation {
 				}
 	}
 	
+	public List<Court> getAllField() {
+		List<Court> c1= courtRepository.findAll();
+				
+					return c1;
+				
+	}
 	
 	public Court changePrice(Long courtId,double price, double priceSocio) {
 		 if (courtRepository.existsById(courtId)) {

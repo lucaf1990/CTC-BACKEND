@@ -25,6 +25,6 @@ public class CourtDTO {
 	    private Long capacity;  
 	    private double price;
 	    private double priceSocio;
-	    private CourtType court;
-private 	    Long courtId;
+	    private CourtType courtType;
+
 }

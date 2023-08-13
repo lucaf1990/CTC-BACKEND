@@ -1,4 +1,6 @@
 package com.CTC.controller.controller;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,6 +17,7 @@ import com.CTC.service.service.CourtServiceImplementation;
 
 @RestController
 @RequestMapping("/api/courts")
+@CrossOrigin(origins = "*", maxAge = 60000000)  
 public class CourtController {
 
     private final CourtServiceImplementation courtService;
@@ -24,7 +27,7 @@ public class CourtController {
         this.courtService = courtService;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Court> createCourt(@RequestBody CourtDTO courtPayload) {
         Court createdCourt = courtService.createCourt(courtPayload);
@@ -37,7 +40,7 @@ public class CourtController {
         Court updated = courtService.updateCourt(courtId, updatedCourt);
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
-    @PutMapping("/cambiaPrezzi/{courtId}")
+    @PutMapping("/cambiaPrezzi/{courtId}/{price}/{priceSocio}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Court> changeCourtPrice(@PathVariable Long courtId, @PathVariable Double price,@PathVariable Double priceSocio) {
         Court updated = courtService.changePrice(courtId, price,priceSocio );
@@ -51,9 +54,15 @@ public class CourtController {
     }
 
     @GetMapping("/{courtId}")
-    @PreAuthorize("hasRole('MODERATOR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Court> getSpecificCourt(@PathVariable Long courtId) {
         Court court = courtService.getSpecificField(courtId);
+        return new ResponseEntity<>(court, HttpStatus.OK);
+    }
+    @GetMapping("/getAll")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Court>> getAllCourt() {
+        List<Court> court = courtService.getAllField();
         return new ResponseEntity<>(court, HttpStatus.OK);
     }
 }

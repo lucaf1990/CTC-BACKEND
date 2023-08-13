@@ -1,5 +1,7 @@
 package com.CTC.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.CTC.entity.ERole;
 import com.CTC.entity.User;
 
 import com.CTC.service.AuthServiceImpl;
@@ -31,35 +34,43 @@ public class UserController {
 	AuthServiceImpl uSer;
 
 	@GetMapping("/{id}")
-	@PreAuthorize("hasRole('ADMIN')")
+
 	public ResponseEntity<User> trovaUserbyId(@PathVariable Long id) {
 		return new ResponseEntity<User>(uSer.findById(id), HttpStatus.OK);
 
 	}
 	
 	@GetMapping("/username/{userName}")
-	
+
 	public ResponseEntity<User> trovaUsername(@PathVariable String userName) {
 		return new ResponseEntity<User>(uSer.findByUsername(userName), HttpStatus.OK);
 		
 	}
-	@DeleteMapping("/{id}")
+	@GetMapping("/all")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<User>> getAllUser() {
+		return new ResponseEntity<List<User>>(uSer.findAllUtente(), HttpStatus.OK);
+		
+	}
+	@DeleteMapping("/delete/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<String> eliminaByID(@PathVariable Long id) {
 		return new ResponseEntity<String>(uSer.removeUtente(id), HttpStatus.OK);
 
 	}
-	@PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE , produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
-	@ResponseBody
-	public ResponseEntity<?> update(@RequestBody User u){
-		return new ResponseEntity<User>(uSer.updateUtente(u),HttpStatus.OK);
-	}
+	
 	@PutMapping("/uploadimage/{id}")	
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
-	public ResponseEntity<?> updateEvento(@PathVariable Long id,@RequestParam("file") MultipartFile file){
+	public ResponseEntity<?> updateUtenteImage(@PathVariable Long id,@RequestParam("file") MultipartFile file){
 		return new ResponseEntity<User>(uSer.updateUtenteImage(id, file),HttpStatus.OK);
 	}
-	
+	 @PutMapping("/update/{id}")
+	    public ResponseEntity<User> updateUserAndRoles(
+	            @RequestBody User updatedUser,
+	            @RequestParam Long id
+	        ) {
+	        User updated = uSer.updateUserDataAndPermissions(id,updatedUser);
+	        return ResponseEntity.ok(updated);
+	    }
 
 }

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.stripe.model.Account.Settings.Payments;
 
 
 
@@ -61,7 +62,10 @@ private String phoneNumber;
     private List<Reviews> reviews = new ArrayList<Reviews>();
   
     @JsonIgnoreProperties(value = "user")
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Payment> payments = new ArrayList<Payment>();
+    @JsonIgnoreProperties(value = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Booking> bookings = new ArrayList<>();
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(name = "user_roles",

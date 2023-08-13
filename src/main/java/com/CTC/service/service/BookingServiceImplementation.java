@@ -52,6 +52,7 @@ public class BookingServiceImplementation implements BookingService{
 	    }
 	    public Booking createBooking(BookingDTO bookingRequest) {
 	        // Retrieve the court from the database using the courtId from the DTO
+	    	
 	        Court court = courtRepository.findById(bookingRequest.getCourtId())
 	                .orElseThrow(() -> new IllegalArgumentException("Court not found with ID: " + bookingRequest.getCourtId()));
 	        
@@ -71,7 +72,7 @@ public class BookingServiceImplementation implements BookingService{
 	        }
 
 	        // Create a new booking
-	        Booking newBooking = new Booking();
+	        if(user.getActive()) { Booking newBooking = new Booking();
 	        newBooking.setTotalToPay(totalToPay);
 	        newBooking.setCourt(court);
 	        newBooking.setBookingDateTime(bookingDateTime);
@@ -93,7 +94,10 @@ public class BookingServiceImplementation implements BookingService{
 	        Payment payment = paymentService.createPayment(savedBooking);
 	        paymentRepository.save(payment); // Assuming you have a paymentRepository to save the Payment object
 
-	        return savedBooking;
+	        return savedBooking;} else {
+	        	throw new IllegalStateException("UTENTE NON ATTIVO");
+	        }
+	       
 	    }
 	    public Booking createBookingAdmin(BookingDTO2 bookingRequest) {
 	        // Retrieve the court from the database using the courtId from the DTO

@@ -35,7 +35,7 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     @JsonIgnoreProperties(value = "bookings") // Use this annotation on the child side of the relationship
     private User user;
@@ -60,5 +60,8 @@ public class Booking {
 	private Set<Reviews> reviews = new HashSet<Reviews>();
     @Column(length = 2000)
     private String notePrenotazione;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "booking")
+    @JsonIgnoreProperties(value = {"booking"})
+    private Set<Payment> payments = new HashSet<>();
   
 }

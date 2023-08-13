@@ -17,16 +17,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.CTC.entity.Booking;
 import com.CTC.entity.ERole;
 import com.CTC.entity.Image;
+import com.CTC.entity.Payment;
 import com.CTC.entity.Role;
 import com.CTC.entity.User;
 import com.CTC.exception.MyAPIException;
+import com.CTC.exception.ResourceNotFoundException;
 import com.CTC.payload.LoginDto;
 import com.CTC.payload.RegisterDto;
 import com.CTC.repository.RoleRepository;
 import com.CTC.repository.UserRepository;
+import com.CTC.repository.repository.BookingRepository;
 import com.CTC.repository.repository.ImageRepository;
+import com.CTC.repository.repository.PaymentRepository;
 import com.CTC.security.JwtTokenProvider;
 import com.CTC.service.service.ImageService;
 
@@ -42,6 +47,10 @@ public class AuthServiceImpl implements AuthService {
  
 	@Autowired
 	ImageService imageService;
+	@Autowired
+	PaymentRepository payRepo;
+	@Autowired
+	BookingRepository bookingRepo;
 private ImageRepository imageRepo;
 
     public AuthServiceImpl(AuthenticationManager authenticationManager,
@@ -139,15 +148,47 @@ private ImageRepository imageRepo;
 		userRepository.save(u);
 	}
 
-	public User updateUtente(User e) {
-		return userRepository.save(e);
+	public User updateUserDataAndPermissions(Long id, User updatedUser) {
+        // Assume you have a way to identify the user, like using the user ID
+        User userToUpdate = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found", null, 0));
+
+        // Update user data
+        userToUpdate.setName(updatedUser.getName());
+        userToUpdate.setLastName(updatedUser.getLastName());
+        userToUpdate.setEmail(updatedUser.getEmail());
+        userToUpdate.setUserName(updatedUser.getUserName());
+        userToUpdate.setActive(updatedUser.getActive());
+        userToUpdate.setIsMember(updatedUser.getIsMember());
+
+    
+      
+        userToUpdate.setRoles(updatedUser.getRoles());
+
+        return userRepository.save(userToUpdate);
+    }
+
+	public String removeUtente(Long userId) {
+	    // Retrieve the user by ID
+	    User user = userRepository.findById(userId)
+	            .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+	    for (Payment payment : user.getPayments()) {
+            payRepo.delete(payment);
+        }
+	    // Delete bookings associated with the user
+	    for (Booking booking : user.getBookings()) {
+	        // Delete payments associated with the booking
+	       
+
+	        bookingRepo.delete(booking);
+	    }
+
+	    // Delete the user
+	    userRepository.deleteById(userId);
+
+	    return "User deleted along with associated payments and bookings";
 	}
 
-
-	public String removeUtente(Long id) {
-		userRepository.deleteById(id);
-		return "Evento eliminato";
-	}
 	public User findById(Long id) {
 		return userRepository.findById(id).get();
 	}
