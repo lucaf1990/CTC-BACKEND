@@ -30,7 +30,8 @@ import com.stripe.model.Account.Settings.Payments;
 @Entity
 @Table(name = "auth_users", uniqueConstraints = {
         @UniqueConstraint(columnNames = "username"),
-        @UniqueConstraint(columnNames = "email")
+        @UniqueConstraint(columnNames = "email"),
+        @UniqueConstraint(columnNames = "confirmationToken")
 })
 public class User {
 
@@ -50,7 +51,9 @@ public class User {
 
     @Column(nullable = false)
     private String password;
-
+    
+    private String confirmationToken;
+private Boolean emailConfirmed;
     private Boolean active;
     private String urlImmagineProfilo;
     private Boolean isMember;

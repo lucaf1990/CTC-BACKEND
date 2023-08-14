@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,6 +52,8 @@ public class AuthServiceImpl implements AuthService {
 	PaymentRepository payRepo;
 	@Autowired
 	BookingRepository bookingRepo;
+	@Autowired
+	EmailService emailService;
 private ImageRepository imageRepo;
 
     public AuthServiceImpl(AuthenticationManager authenticationManager,
@@ -104,17 +107,19 @@ private ImageRepository imageRepo;
         user.setLastName(registerDto.getLastName());
         user.setPhoneNumber(registerDto.getPhoneNumber());
         user.setIsMember(false);
-        Set<Role> roles = new HashSet<>();
-        
-     
-        	Role userRole = roleRepository.findByRoleName(ERole.ROLE_USER);
-        	roles.add(userRole);
-        
-        
-        user.setRoles(roles);
-        System.out.println(user);
-        userRepository.save(user);
 
+        Set<Role> roles = new HashSet<>();
+        Role userRole = roleRepository.findByRoleName(ERole.ROLE_USER);
+        roles.add(userRole);
+        user.setRoles(roles);
+
+        String confirmationToken = UUID.randomUUID().toString(); // Generate confirmation token
+        user.setConfirmationToken(confirmationToken); // Set confirmation token
+
+        userRepository.save(user); // Save user with confirmation token
+
+        String confirmationLink = "http://localhost:3000/email-confirmation/" + confirmationToken;
+        emailService.sendConfirmationEmail(user.getEmail(), confirmationLink);
         return "Registrazione avvenuta con successo";
     }
     
