@@ -119,7 +119,8 @@ private ImageRepository imageRepo;
         userRepository.save(user); // Save user with confirmation token
 
         String confirmationLink = "http://localhost:3000/email-confirmation/" + confirmationToken;
-        emailService.sendConfirmationEmail(user.getEmail(), confirmationLink);
+        String expectedLink= confirmationLink;
+        emailService.sendConfirmationEmail(user.getEmail(), confirmationLink, user.getName(), expectedLink);
         return "Registrazione avvenuta con successo";
     }
     
@@ -147,7 +148,7 @@ private ImageRepository imageRepo;
 	public void changePermissions(String s,ERole roles) {
 		Set<Role> role = new HashSet<Role>();
 		role.add(roleRepository.findByRoleName(roles));
-		User u = userRepository.findByEmail(s).get();
+		User u = userRepository.findByEmail(s);
 		u.setRoles(role);
 	
 		userRepository.save(u);
@@ -228,4 +229,18 @@ private ImageRepository imageRepo;
 	    }
 	    return false;
 	}
+    @Override
+    public String generateResetToken(User user) {
+        String resetToken = UUID.randomUUID().toString();
+        user.setResetToken(resetToken);
+        userRepository.save(user); // Save the updated user with reset token
+        
+        return resetToken;
+    }
+    @Override
+    public void updateUserPassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+    
 }

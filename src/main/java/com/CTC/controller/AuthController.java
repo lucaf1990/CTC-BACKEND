@@ -6,6 +6,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.CTC.entity.ConfirmationTokenRequest;
 import com.CTC.entity.ERole;
+import com.CTC.entity.PasswordResetRequest;
 import com.CTC.entity.User;
 import com.CTC.payload.JWTAuthResponse;
 import com.CTC.payload.LoginDto;
@@ -24,6 +28,7 @@ import com.CTC.payload.RegisterDto;
 import com.CTC.repository.UserRepository;
 import com.CTC.service.AuthService;
 import com.CTC.service.AuthServiceImpl;
+import com.CTC.service.EmailService;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -40,6 +45,8 @@ public class AuthController {
     private AuthService authService;
     @Autowired
 	UserRepository userRepository;
+    @Autowired
+    private JavaMailSender mailSender;
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
@@ -103,4 +110,53 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update user.");
         }
     }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody PasswordResetRequest resetRequest) {
+    	  User user = userRepository.findByEmail(resetRequest.getEmail());
+
+    	    if (user == null) {
+    	        return ResponseEntity.badRequest().body("User with this email address does not exist.");
+    	    }
+
+    	    String resetToken = authService.generateResetToken(user);
+    	    String resetLink = "http://localhost:3000/reset-password/" + resetToken;
+    	    // Send the resetToken to the user's email address
+    	    try {
+    	        String emailSubject = "Password Reset";
+    	        String emailBody = "Your password reset token is: " + resetLink;
+    	        
+    	        SimpleMailMessage mailMessage = new SimpleMailMessage();
+    	        mailMessage.setTo(user.getEmail());
+    	        mailMessage.setSubject(emailSubject);
+    	        mailMessage.setText(emailBody);
+    	        
+    	        mailSender.send(mailMessage);
+    	        
+    	        return ResponseEntity.ok("Password reset token sent successfully.");
+    	    } catch (MailException e) {
+    	        // Handle email sending failure
+    	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email.");
+    	    }
+    }
+    @PutMapping("/reset-password/{token}")
+    public ResponseEntity<String> resetPassword(
+        @PathVariable String token,
+        @RequestBody PasswordResetRequest resetRequest
+    ) {
+        User user = userRepository.findByResetToken(token);
+
+        if (user == null) {
+            return ResponseEntity.badRequest().body("Invalid or expired token.");
+        }
+
+        // Update user's password
+        authService.updateUserPassword(user, resetRequest.getNewPassword());
+
+        // Clear the reset token
+        user.setResetToken(null);
+        userRepository.save(user);
+
+        return ResponseEntity.ok("Password reset successfully.");
+    }
+
 }
