@@ -47,6 +47,7 @@ public class AuthController {
 	UserRepository userRepository;
     @Autowired
     private JavaMailSender mailSender;
+    
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
@@ -105,7 +106,7 @@ public class AuthController {
         User updatedUser = userRepository.save(user); // Save the updated user
 
         if (updatedUser != null) {
-            return ResponseEntity.ok("Email confirmed successfully.");
+            return ResponseEntity.ok("UNA EMAIL PER IL RECUPERO PASSWORD E' STATA INVIATA CON SUCCESSO ");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update user.");
         }
@@ -115,15 +116,15 @@ public class AuthController {
     	  User user = userRepository.findByEmail(resetRequest.getEmail());
 
     	    if (user == null) {
-    	        return ResponseEntity.badRequest().body("User with this email address does not exist.");
+    	        return ResponseEntity.badRequest().body("NESSUN UTENTE REGISTRATO CON QUESTO INDIRIZZO EMAIL");
     	    }
 
     	    String resetToken = authService.generateResetToken(user);
     	    String resetLink = "http://localhost:3000/reset-password/" + resetToken;
     	    // Send the resetToken to the user's email address
     	    try {
-    	        String emailSubject = "Password Reset";
-    	        String emailBody = "Your password reset token is: " + resetLink;
+    	        String emailSubject = "CTC - Recupera password";
+    	        String emailBody = "Clicca sul seguente link se vuoi modificare la tua password " + resetLink;
     	        
     	        SimpleMailMessage mailMessage = new SimpleMailMessage();
     	        mailMessage.setTo(user.getEmail());
@@ -132,7 +133,7 @@ public class AuthController {
     	        
     	        mailSender.send(mailMessage);
     	        
-    	        return ResponseEntity.ok("Password reset token sent successfully.");
+    	        return ResponseEntity.ok("UNA EMAIL PER IL RECUPERO PASSWORD E' STATA INVIATA CON SUCCESSO ");
     	    } catch (MailException e) {
     	        // Handle email sending failure
     	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email.");
@@ -146,7 +147,7 @@ public class AuthController {
         User user = userRepository.findByResetToken(token);
 
         if (user == null) {
-            return ResponseEntity.badRequest().body("Invalid or expired token.");
+            return ResponseEntity.badRequest().body("TOKEN PER IL RECUPERO PASSWORD INVALIDO O SCADUTO");
         }
 
         // Update user's password
@@ -156,7 +157,7 @@ public class AuthController {
         user.setResetToken(null);
         userRepository.save(user);
 
-        return ResponseEntity.ok("Password reset successfully.");
+        return ResponseEntity.ok("LA PASSWORD E' STATA AGGIORNATA IN MODO CORRETTO");
     }
 
 }
