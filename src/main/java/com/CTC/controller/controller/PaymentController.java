@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.CTC.entity.Booking;
 import com.CTC.entity.Payment;
 import com.CTC.repository.repository.BookingRepository;
+import com.CTC.service.EmailService;
 import com.CTC.service.service.PaymentService;
 import com.CTC.service.service.PaymentServiceImplementation;
 import com.google.gson.Gson;
@@ -41,7 +43,8 @@ public class PaymentController {
     private PaymentServiceImplementation paymentService;
     @Autowired
     private BookingRepository bookingRepository;
-
+    @Autowired
+    private EmailService emailSender;
     @Value("${STRIPE_SECRET_KEY}")
     private String secretKey;
 
@@ -61,7 +64,7 @@ public class PaymentController {
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
     @GetMapping("/payment/{utenteId}")
-    @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<List<Payment>> getPayments(@PathVariable Long utenteId) {
         List<Payment> list = paymentService.getUserPayments(utenteId);
         return new ResponseEntity<>(list, HttpStatus.OK);
@@ -77,7 +80,7 @@ public class PaymentController {
 	    }
 	
 	    @PostMapping("/create-payment")
-	    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	
 	    public String createPayment(@RequestBody Payment payment) throws StripeException {
 	        Stripe.apiKey = secretKey;
 	
@@ -92,11 +95,12 @@ public class PaymentController {
 	
 	        // Save the Payment entity in the database
 	        paymentService.createPayment(payment);
-	
+
 	        // Return the client secret as a response
 	        CreatePaymentResponse paymentResponse = new CreatePaymentResponse(paymentIntent.getClientSecret());
 	        return gson.toJson(paymentResponse);
 	    }
+	    
 	    static int calculateOrderAmount(Object[] items) {
 	        int totalAmount = 0;
 	

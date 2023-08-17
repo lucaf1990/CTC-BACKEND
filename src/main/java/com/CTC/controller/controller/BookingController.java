@@ -20,7 +20,6 @@ import com.CTC.service.service.BookingServiceImplementation;
 @RequestMapping("/bookings")
 @CrossOrigin(origins = "*", maxAge = 60000000)  
 public class BookingController {
-
     private final BookingServiceImplementation bookingService;
 
     @Autowired
@@ -51,10 +50,10 @@ public class BookingController {
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{bookingId}")
+    @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
-    public ResponseEntity<Void> deleteBooking(@PathVariable Long bookingId) {
-        bookingService.deleteBooking(bookingId);
+    public ResponseEntity<Void> deleteBooking(@PathVariable Long id) {
+        bookingService.deleteBooking(id);
         return new ResponseEntity<Void>( HttpStatus.OK);
     }
     @DeleteMapping("/delete/admin/{bookingId}")
@@ -100,5 +99,10 @@ public class BookingController {
         List<Booking> bookings = bookingService.getAllUserBookings();
         return new ResponseEntity<>(bookings, HttpStatus.OK);
     }
+	@PutMapping("/pay/{id}")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole('MODERATOR')")
+	public ResponseEntity<?> sponsorizza(@PathVariable Long id) {
+		return new ResponseEntity<Booking>(bookingService.payBooking(id), HttpStatus.OK);
+	}
 }
 

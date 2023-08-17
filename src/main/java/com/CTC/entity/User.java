@@ -63,7 +63,9 @@ private String phoneNumber;
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = "user")
     private List<Reviews> reviews = new ArrayList<Reviews>();
-  
+  @OneToMany
+  @JsonIgnoreProperties
+  private List<Receipt> receipts = new ArrayList<Receipt>();
     @JsonIgnoreProperties(value = "user")
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Payment> payments = new ArrayList<Payment>();

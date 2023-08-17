@@ -79,7 +79,7 @@ public class BookingServiceImplementation implements BookingService{
 	        newBooking.setBookingEnds(bookingDateTime.plusHours(bookingRequest.getHours()));
 	        newBooking.setConfirmed(true); // You can set the default value for confirmed as needed
 	        newBooking.setUser(user);//per vedere  se è memebro o mo 
-	    
+	    newBooking.setIsPaid(false);
 	        newBooking.setHours(bookingRequest.getHours());
 
 	        // Check for booking conflicts before saving the booking
@@ -190,10 +190,10 @@ existingBooking.getUser();
 	    }
 
 
-	    public void deleteBooking(Long bookingId) {
+	    public void deleteBooking(Long id) {
 	        // Check if the booking exists in the database
-	        Booking existingBooking = bookingRepository.findById(bookingId)
-	                .orElseThrow(() -> new IllegalArgumentException("Booking not found with ID: " + bookingId));
+	        Booking existingBooking = bookingRepository.findById(id)
+	                .orElseThrow(() -> new IllegalArgumentException("Booking not found with ID: " +id ));
 
 	        // Check if the booking start time is at least 24 hours from now
 	        LocalDateTime currentDateTime = LocalDateTime.now();
@@ -205,13 +205,14 @@ existingBooking.getUser();
 	        }
 
 	        // Delete the associated payment, if it exists
-	        Payment payment = paymentRepository.findByBookingId(bookingId);
+	        Payment payment = paymentRepository.findByBookingId(id);
 	        if (payment != null) {
 	            paymentRepository.delete(payment);
+	       
 	        }
-
-	        // Delete the booking from the database
 	        bookingRepository.delete(existingBooking);
+	        // Delete the booking from the database
+	       
 	 
 	    }
 	    public void deleteBookingAdmin(Long bookingId) {
@@ -305,4 +306,12 @@ existingBooking.getUser();
 	                })
 	                .collect(Collectors.toList());
 	    }
+	    public Booking payBooking(Long id) {
+			Booking e = bookingRepository.findById(id).get();
+		
+			e.setIsPaid(true);
+			bookingRepository.save(e);
+			return e;
+		}
+
 }

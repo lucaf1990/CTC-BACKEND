@@ -2,7 +2,9 @@ package com.CTC.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -35,11 +37,11 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnoreProperties(value = "bookings") // Use this annotation on the child side of the relationship
     private User user;
-
+ private Boolean isPaid;
     @ManyToOne
     @JoinColumn(name = "court_id", nullable = false)
     private Court court; // Campo prenotato

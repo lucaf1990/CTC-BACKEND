@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,9 @@ import com.CTC.entity.Booking;
 import com.CTC.entity.Payment;
 import com.CTC.repository.repository.PaymentRepository;
 import com.CTC.service.AuthService;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 
 
 @Service
@@ -33,7 +37,21 @@ public class PaymentServiceImplementation implements PaymentService{
 
 	        return payment;
 	    }
+	  public static void main() {
+	        String secretKey = "";
+	        Stripe.apiKey = secretKey;
 
+	        String paymentIntentId = ""; // Replace with the actual Payment Intent ID
+
+	        try {
+	            PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
+	            System.out.println("Payment Status: " + paymentIntent.getStatus());
+	            System.out.println("Payment Amount: " + paymentIntent.getAmount());
+	            // Retrieve and print other payment details
+	        } catch (StripeException e) {
+	            e.printStackTrace();
+	        }
+	    }
 	public Payment createPayment(Payment payment) {
 		return payment;
 	}
@@ -48,4 +66,6 @@ public class PaymentServiceImplementation implements PaymentService{
 		return list;
 		
 	}
+	
+
 }
