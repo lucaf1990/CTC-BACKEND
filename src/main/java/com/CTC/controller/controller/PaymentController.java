@@ -12,14 +12,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.CTC.entity.Booking;
 import com.CTC.entity.Payment;
+import com.CTC.entity.User;
 import com.CTC.repository.repository.BookingRepository;
+import com.CTC.repository.repository.PaymentRepository;
 import com.CTC.service.EmailService;
 import com.CTC.service.service.PaymentService;
 import com.CTC.service.service.PaymentServiceImplementation;
@@ -45,6 +49,7 @@ public class PaymentController {
     private BookingRepository bookingRepository;
     @Autowired
     private EmailService emailSender;
+    @Autowired PaymentRepository repo;
     @Value("${STRIPE_SECRET_KEY}")
     private String secretKey;
 
@@ -57,19 +62,40 @@ public class PaymentController {
         }
     }
 
-    @GetMapping("/payment/all")
+    @GetMapping("/payments/all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Payment>> getAllPayment() {
-        List<Payment> list = paymentService.getAllPayments();
+        List<Payment> list = paymentService.getPayments();
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
+
+
     @GetMapping("/payment/{utenteId}")
 
     public ResponseEntity<List<Payment>> getPayments(@PathVariable Long utenteId) {
         List<Payment> list = paymentService.getUserPayments(utenteId);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
-    
+    @PutMapping("/markAsPaid/{id}")	
+	@PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> markAsPaid(@PathVariable Long id) {
+        try {
+            Payment p = repo.findById(id).get();
+            Booking b = bookingRepository.findById(id).get();
+
+            if (!p.isPaid() && !b.getIsPaid()) {
+                p.setPaid(true);
+                b.setIsPaid(true);
+                repo.save(p);
+                bookingRepository.save(b);
+                return ResponseEntity.ok("Payment marked as paid.");
+            } else {
+                return ResponseEntity.badRequest().body("Payment is already paid.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
     
     static class CreatePaymentResponse {
         private String clientSecret;

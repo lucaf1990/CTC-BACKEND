@@ -308,10 +308,11 @@ existingBooking.getUser();
 	    }
 	    public Booking payBooking(Long id) {
 			Booking e = bookingRepository.findById(id).get();
-		
+		Payment p= paymentRepository.findById(id).get();
 			e.setIsPaid(true);
+			p.setPaid(true);
 			bookingRepository.save(e);
-			return e;
+			paymentRepository.save(p)	;		return e;
 		}
 
 }

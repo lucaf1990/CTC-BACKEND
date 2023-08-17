@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.CTC.entity.Booking;
 import com.CTC.entity.Payment;
+import com.CTC.repository.repository.BookingRepository;
 import com.CTC.repository.repository.PaymentRepository;
 import com.CTC.service.AuthService;
 import com.stripe.Stripe;
@@ -22,6 +23,7 @@ import com.stripe.model.PaymentIntent;
 public class PaymentServiceImplementation implements PaymentService{
 	@Autowired AuthService authService;
 @Autowired PaymentRepository repo;
+@Autowired BookingRepository bookingRepo;
 	public Payment createPayment(Booking booking) {
 
 	        Payment payment = new Payment();
@@ -55,10 +57,7 @@ public class PaymentServiceImplementation implements PaymentService{
 	public Payment createPayment(Payment payment) {
 		return payment;
 	}
-	public List<Payment> getAllPayments(){
-		List<Payment> list= repo.findAll();
-		return list;
-	}
+
 	public List<Payment> getUserPayments(Long id){
 		
 		List<Payment> list=repo.findByUtenteId(id);
@@ -66,6 +65,22 @@ public class PaymentServiceImplementation implements PaymentService{
 		return list;
 		
 	}
+	public List<Payment> getPayments(){
+		return repo.findAll();
+	}
+public void markAsPaid(Long id) {
+Payment p = repo.findById(id).get();
+Booking b= bookingRepo.findById(id).get();
+if(!p.isPaid() && !b.getIsPaid()) {
+	p.setPaid(true);
 	
+	b.setIsPaid(true);
+	
+} else {
+	
+}
+repo.save(p);
+bookingRepo.save(b);
+}
 
 }
