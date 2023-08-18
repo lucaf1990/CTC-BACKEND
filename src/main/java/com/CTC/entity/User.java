@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.stripe.model.Account.Settings.Payments;
+
+
 
 
 

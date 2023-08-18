@@ -68,19 +68,24 @@ public class PaymentServiceImplementation implements PaymentService{
 	public List<Payment> getPayments(){
 		return repo.findAll();
 	}
-public void markAsPaid(Long id) {
-Payment p = repo.findById(id).get();
-Booking b= bookingRepo.findById(id).get();
-if(!p.isPaid() && !b.getIsPaid()) {
-	p.setPaid(true);
-	
-	b.setIsPaid(true);
-	
-} else {
-	
-}
-repo.save(p);
-bookingRepo.save(b);
-}
+public Payment markAsPaid(Long id) {
+	 Payment payment = repo.findById(id).orElse(null);
 
+	    if (payment != null && !payment.isPaid()) {
+	        payment.setPaid(true);
+	        repo.save(payment);
+
+	        // Find and update the associated Booking
+	        Booking booking = payment.getBooking(); // Adjust this based on your entity structure
+	        if (booking != null) {
+	            booking.setIsPaid(true);
+	            bookingRepo.save(booking);
+	        }
+
+	        return payment;
+	    } else {
+	        // Handle case when payment is not found or is already paid
+	        return null; // or throw an exception, return a response, etc.
+	    }
+}
 }

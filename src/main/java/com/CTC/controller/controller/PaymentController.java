@@ -78,23 +78,9 @@ public class PaymentController {
     }
     @PutMapping("/markAsPaid/{id}")	
 	@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> markAsPaid(@PathVariable Long id) {
-        try {
-            Payment p = repo.findById(id).get();
-            Booking b = bookingRepository.findById(id).get();
-
-            if (!p.isPaid() && !b.getIsPaid()) {
-                p.setPaid(true);
-                b.setIsPaid(true);
-                repo.save(p);
-                bookingRepository.save(b);
-                return ResponseEntity.ok("Payment marked as paid.");
-            } else {
-                return ResponseEntity.badRequest().body("Payment is already paid.");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<Payment> markAsPaid(@PathVariable Long id) {
+    	
+        return new ResponseEntity<Payment> (paymentService.markAsPaid(id), HttpStatus.OK);
     }
     
     static class CreatePaymentResponse {
