@@ -30,10 +30,8 @@ public class Receipt {
     private Long id;
 	@ManyToOne
     private User user;
-	@OneToOne// Assuming you have a User class
-    private Booking booking; // Assuming you have a Booking class
+	@OneToOne// 
+    private Booking booking; 
     private BigDecimal paymentAmount;
-    // Other fields such as transaction ID, payment method, timestamp, etc.
-
-    // Constructor, getters, and setters
+ 
 }

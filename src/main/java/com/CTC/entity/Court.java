@@ -30,4 +30,6 @@ public class Court {
     
     @Enumerated(EnumType.STRING)
     private CourtType courtType;
+    
+    private Boolean isActive;
 }

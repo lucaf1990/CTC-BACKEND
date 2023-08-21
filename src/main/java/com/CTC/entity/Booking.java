@@ -39,22 +39,22 @@ public class Booking {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties(value = "bookings") // Use this annotation on the child side of the relationship
+    @JsonIgnoreProperties(value = "bookings")
     private User user;
  private Boolean isPaid;
     @ManyToOne
     @JoinColumn(name = "court_id", nullable = false)
-    private Court court; // Campo prenotato
+    private Court court; 
     @Column(nullable = false)
     private int hours;
     
     @Column(nullable = false)
     private LocalDateTime bookingDateTime; 
-    // Data e ora della prenotazione
+  
     private LocalDateTime bookingEnds; 
     
     @Column(nullable = false)
-    private boolean confirmed; // Stato della prenotazione (confermata, in attesa, cancellata) true/false
+    private boolean confirmed; 
 
     private BigDecimal totalToPay;
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)

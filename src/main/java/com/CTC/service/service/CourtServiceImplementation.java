@@ -34,7 +34,7 @@ public class CourtServiceImplementation {
 	    	if(court2.isPresent()) {
 	    		court2.get().setPrice(price);
 	    		
-	    		//ismEMBER O NO
+	   
 	    		
 	    		
 	    		
@@ -47,31 +47,37 @@ public class CourtServiceImplementation {
 	    	
 	    }
 	    public Court createCourt(CourtDTO courtPayload) {
-	        // Validate typeField
+	    
 	        TypeField typeField = courtPayload.getTypeField();
 	        if (typeField == null || !EnumSet.of(TypeField.CALCETTO, TypeField.TENNIS, TypeField.BEACHVOLLEY).contains(typeField)) {
 	            throw new InvalidCourtDataException("Invalid typeField value. Use CALCETTO, TENNIS, or BEACHVOLLEY.");
 	        }
 
-	        // Validate courtType
+	     
 	        CourtType courtType = courtPayload.getCourtType();
 	        if (courtType == null || !EnumSet.of(CourtType.INDOOR, CourtType.OUTDOOR).contains(courtType)) {
 	            throw new InvalidCourtDataException("Invalid courtType value. Use INDOOR or OUTDOOR.");
 	        }
 
-	        // Create and save the court
+	 
 	        Court court = new Court();
 	        court.setTypeField(typeField);
 	        court.setPrice(courtPayload.getPrice());
 	        court.setPriceSocio(courtPayload.getPriceSocio());
 	        court.setCourtType(courtType);
 	        court.setCapacity(courtPayload.getCapacity());
-
+court.setIsActive(true);
 	        courtRepository.save(court);
 
 	        return court;
 	    }
 	  
+	    public Court courtMaintaince(Long id) {
+	   Court c1= courtRepository.findById(id).get();
+	   c1.setIsActive(!c1.getIsActive());
+	   courtRepository.save(c1);
+		return c1;
+	    }
 	  
 	  public Court updateCourt(Long courtId, Court updatedCourt) {
 		    if (courtRepository.existsById(courtId)) {

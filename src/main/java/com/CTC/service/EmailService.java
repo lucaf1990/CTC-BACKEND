@@ -29,7 +29,6 @@ public class EmailService {
             
             String emailContent;
             if (confirmationLink.equals(expectedLink)) {
-                // Define your HTML content for a valid confirmation link
                 emailContent = "<html><body>"
                         + "<h1>CTC  </h1>"
                 		+"<h5>Conferma il tuo indirizzo Email</h5>"
@@ -45,7 +44,7 @@ public class EmailService {
                         +"<p>Se hai bisogno di ulteriore assistenza, ti preghiamo di contattarci immediatamente a questo indirizzo.</p>"
                         + "</body></html>";
             } else {
-                // Define your HTML content for an invalid confirmation link
+
                 emailContent = "<html><body>"
                         + "<h1>CTC Conferma il tuo indirizzo Email </h1>"
                         + "<p>Ciao " + name +",</p>"
@@ -56,10 +55,10 @@ public class EmailService {
                         + "</body></html>";
             }
 
-            helper.setText(emailContent, true); // true indicates HTML content
+            helper.setText(emailContent, true); 
             emailSender.send(message);
         } catch (Exception e) {
-            // Handle exception
+           
         }
     }
     public void sendReceiptToUser(Payment receipt) {
@@ -70,21 +69,21 @@ public class EmailService {
         	helper.setTo(receipt.getUser().getEmail());
         	helper.setSubject("CTC - Payment Receipt");
 
-        	// Construct the email content with receipt details
+        
         	String emailContent = "<html><body>"
         	        + "<h1>CTC - Payment Receipt</h1>"
         	        + "<p>Dear " + receipt.getUser().getName() + ",</p>"
         	        + "<p>Thank you for your payment!</p>"
         	        + "<p>Booking ID: " + receipt.getBooking().getId() + "</p>"
         	        + "<p>Payment Amount: " + receipt.getAmount() + "</p>"
-        	        // Include other receipt details
+        	       
         	        + "</body></html>";
 
         	helper.setText(emailContent, true);
         	emailSender.send(message);
 
 		} catch (Exception e) {
-			// TODO: handle exception
+			
 		}
     	
 

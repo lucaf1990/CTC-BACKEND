@@ -30,12 +30,11 @@ public class PaymentServiceImplementation implements PaymentService{
 	        payment.setBooking(booking);
 	 payment.setUtenteId(booking.getUser().getId());
 	
-	        payment.setAmount(booking.getTotalToPay()); // Set the payment amount from the booking's totalToPay
-	        payment.setPaymentDateTime(LocalDateTime.now()); // Set the payment date and time as the current time
-	        payment.setPaid(false); // By default, set the payment as unpaid
-	        // Add any other necessary payment properties such as creditCard, secretCode, alfaCode, etc.
+	        payment.setAmount(booking.getTotalToPay()); 
+	        payment.setPaymentDateTime(LocalDateTime.now()); 
+	        payment.setPaid(false); 
 	        BigDecimal amountInCents = booking.getTotalToPay().multiply(BigDecimal.valueOf(1000));
-	        payment.setAmountInCents(amountInCents.longValue()); // Convert the calculated BigDecimal to a long
+	        payment.setAmountInCents(amountInCents.longValue()); 
 
 	        return payment;
 	    }
@@ -43,13 +42,13 @@ public class PaymentServiceImplementation implements PaymentService{
 	        String secretKey = "";
 	        Stripe.apiKey = secretKey;
 
-	        String paymentIntentId = ""; // Replace with the actual Payment Intent ID
+	        String paymentIntentId = ""; 
 
 	        try {
 	            PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
 	            System.out.println("Payment Status: " + paymentIntent.getStatus());
 	            System.out.println("Payment Amount: " + paymentIntent.getAmount());
-	            // Retrieve and print other payment details
+	           
 	        } catch (StripeException e) {
 	            e.printStackTrace();
 	        }
@@ -75,8 +74,8 @@ public Payment markAsPaid(Long id) {
 	        payment.setPaid(true);
 	        repo.save(payment);
 
-	        // Find and update the associated Booking
-	        Booking booking = payment.getBooking(); // Adjust this based on your entity structure
+	        
+	        Booking booking = payment.getBooking();
 	        if (booking != null) {
 	            booking.setIsPaid(true);
 	            bookingRepo.save(booking);
@@ -84,8 +83,8 @@ public Payment markAsPaid(Long id) {
 
 	        return payment;
 	    } else {
-	        // Handle case when payment is not found or is already paid
-	        return null; // or throw an exception, return a response, etc.
+	      
+	        return null; 
 	    }
 }
 }

@@ -53,18 +53,18 @@ public class AuthController {
     }
     @PersistenceContext
     private EntityManager entityManager;
-    // Build Login REST API
+    
     @PostMapping(value = {"/login", "/signin"})
     public ResponseEntity<?> login(@RequestBody LoginDto loginDto){
         User user = userRepository.findByUserName(loginDto.getUserName());
 
         if (user == null) {
-            // Return error response indicating user not found
+
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials.");
         }
 
         if (!user.getEmailConfirmed()) {
-            // Return error response indicating unconfirmed email
+         
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email not confirmed.");
         }
 
@@ -103,7 +103,7 @@ public class AuthController {
         user.setEmailConfirmed(true);
         user.setConfirmationToken(null);
 
-        User updatedUser = userRepository.save(user); // Save the updated user
+        User updatedUser = userRepository.save(user); 
 
         if (updatedUser != null) {
             return ResponseEntity.ok("UNA EMAIL PER IL RECUPERO PASSWORD E' STATA INVIATA CON SUCCESSO ");
@@ -121,7 +121,7 @@ public class AuthController {
 
     	    String resetToken = authService.generateResetToken(user);
     	    String resetLink = "http://localhost:3000/reset-password/" + resetToken;
-    	    // Send the resetToken to the user's email address
+    	  
     	    try {
     	        String emailSubject = "CTC - Recupera password";
     	        String emailBody = "Clicca sul seguente link se vuoi modificare la tua password " + resetLink;
@@ -150,10 +150,10 @@ public class AuthController {
             return ResponseEntity.badRequest().body("TOKEN PER IL RECUPERO PASSWORD INVALIDO O SCADUTO");
         }
 
-        // Update user's password
+
         authService.updateUserPassword(user, resetRequest.getNewPassword());
 
-        // Clear the reset token
+
         user.setResetToken(null);
         userRepository.save(user);
 

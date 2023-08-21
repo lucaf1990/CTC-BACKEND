@@ -20,12 +20,9 @@ import com.CTC.service.service.CourtServiceImplementation;
 @CrossOrigin(origins = "*", maxAge = 60000000)  
 public class CourtController {
 
-    private final CourtServiceImplementation courtService;
+    @Autowired public CourtServiceImplementation courtService;
 
-    @Autowired
-    public CourtController(CourtServiceImplementation courtService) {
-        this.courtService = courtService;
-    }
+     
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
@@ -46,6 +43,12 @@ public class CourtController {
         Court updated = courtService.changePrice(courtId, price,priceSocio );
         return new ResponseEntity<Court>(updated, HttpStatus.OK);
     }
+    @PutMapping("/courtMaintaince/{courtId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Court>courtMaintaince (@PathVariable Long courtId) {
+        Court updated = courtService.courtMaintaince(courtId);
+        return new ResponseEntity<Court>(updated, HttpStatus.OK);
+    }
     @DeleteMapping("/{courtId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteCourt(@PathVariable Long courtId) {
@@ -60,7 +63,7 @@ public class CourtController {
         return new ResponseEntity<>(court, HttpStatus.OK);
     }
     @GetMapping("/getAll")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')or hasRole('MODERATOR')")
     public ResponseEntity<List<Court>> getAllCourt() {
         List<Court> court = courtService.getAllField();
         return new ResponseEntity<>(court, HttpStatus.OK);

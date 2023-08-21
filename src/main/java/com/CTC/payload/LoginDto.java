@@ -12,13 +12,9 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class LoginDto {
-	  private String userName; // You can keep this field if you still want to support username login
-	    private String email;    // Add this field for email login
+	  private String userName; 
+	    private String email;   
 	    private String password;
 }
 
-//Il client dovrà inviare un oggetto JSON nel body con questa forma
-/*{
-    "username": "francescaneri",
-    "password": "qwerty"
-}*/
+

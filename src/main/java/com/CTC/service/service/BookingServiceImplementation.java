@@ -47,15 +47,15 @@ public class BookingServiceImplementation implements BookingService{
 	    private PaymentRepository paymentRepository;
 	    private BigDecimal totalToPay(double price, int hours) {
 	        double total = price * hours;
-	        // Convert the total to a BigDecimal with two decimal places
+	       
 	        return BigDecimal.valueOf(total).setScale(2, RoundingMode.HALF_UP);
 	    }
 	    public Booking createBooking(BookingDTO bookingRequest) {
-	        // Retrieve the court from the database using the courtId from the DTO
+	    
 	    	
 	        Court court = courtRepository.findById(bookingRequest.getCourtId())
 	                .orElseThrow(() -> new IllegalArgumentException("Court not found with ID: " + bookingRequest.getCourtId()));
-	        
+	       if(court.getIsActive()) {
 	        User user = userRepository.findById(bookingRequest.getUserId())
 	                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + authService.getCurrentUser().getId()));
 	        boolean isModerator = authService.isModerator(user.getId());
@@ -77,30 +77,32 @@ public class BookingServiceImplementation implements BookingService{
 	        newBooking.setCourt(court);
 	        newBooking.setBookingDateTime(bookingDateTime);
 	        newBooking.setBookingEnds(bookingDateTime.plusHours(bookingRequest.getHours()));
-	        newBooking.setConfirmed(true); // You can set the default value for confirmed as needed
-	        newBooking.setUser(user);//per vedere  se è memebro o mo 
+	        newBooking.setConfirmed(true); 
+	        newBooking.setUser(user);
 	    newBooking.setIsPaid(false);
 	        newBooking.setHours(bookingRequest.getHours());
 
-	        // Check for booking conflicts before saving the booking
+	      
 	        if (isBookingConflict(newBooking)) {
 	            throw new IllegalArgumentException("Booking conflict detected");
 	        }
 
-	        // Save the booking to the database
+	       
 	        Booking savedBooking = bookingRepository.save(newBooking);
 
-	        // Create and save the payment object
+	       
 	        Payment payment = paymentService.createPayment(savedBooking);
-	        paymentRepository.save(payment); // Assuming you have a paymentRepository to save the Payment object
+	        paymentRepository.save(payment);
 
 	        return savedBooking;} else {
 	        	throw new IllegalStateException("UTENTE NON ATTIVO");
-	        }
+	        }}
+	       else {
+	    	   throw new Error("Il campo non è attivo");	       }
 	       
 	    }
 	    public Booking createBookingAdmin(BookingDTO2 bookingRequest) {
-	        // Retrieve the court from the database using the courtId from the DTO
+	        
 	        Court court = courtRepository.findById(bookingRequest.getCourtId())
 	                .orElseThrow(() -> new IllegalArgumentException("Court not found with ID: " + bookingRequest.getCourtId()));
 	        
@@ -119,43 +121,39 @@ public class BookingServiceImplementation implements BookingService{
 	            throw new IllegalArgumentException("Booking date and time cannot be in the past.");
 	        }
 	
-	       
-
-
-	        // Create a new booking
+	    
 	        Booking newBooking = new Booking();
 	        newBooking.setTotalToPay(totalToPay);
 	        newBooking.setCourt(court);
 	        newBooking.setBookingDateTime(bookingDateTime);
 	        newBooking.setBookingEnds(bookingDateTime.plusHours(bookingRequest.getHours()));
-	        newBooking.setConfirmed(true); // You can set the default value for confirmed as needed
+	        newBooking.setConfirmed(true);
 	       
 	    newBooking.setUser(user);
 	        newBooking.setHours(bookingRequest.getHours());
 	        newBooking.setNotePrenotazione(bookingRequest.getNotePrenotazione());
 
-	        // Check for booking conflicts before saving the booking
+	      
 	        if (isBookingConflict(newBooking)) {
 	            throw new IllegalArgumentException("Booking conflict detected");
 	        }
 
-	        // Save the booking to the database
+	        
 	        Booking savedBooking = bookingRepository.save(newBooking);
 
-	        // Create and save the payment object
+	        
 	        Payment payment = paymentService.createPayment(savedBooking);
-	        paymentRepository.save(payment); // Assuming you have a paymentRepository to save the Payment object
-
+	        paymentRepository.save(payment);
 	        return savedBooking;
 	    }
 
 
 	    public Booking updateBooking(Booking booking) {
-	        // Check if the booking exists in the database
+	       
 	        Booking existingBooking = bookingRepository.findById(booking.getId())
 	                .orElseThrow(() -> new IllegalArgumentException("Booking not found with ID: " + booking.getId()));
 
-	        // Check if the booking start time is at least 24 hours from now
+	     
 	        LocalDateTime currentDateTime = LocalDateTime.now();
 	        LocalDateTime bookingStartDateTime = booking.getBookingDateTime();
 	        long hoursDifference = ChronoUnit.HOURS.between(currentDateTime, bookingStartDateTime);
@@ -164,25 +162,24 @@ public class BookingServiceImplementation implements BookingService{
 	            throw new IllegalArgumentException("The booking cannot be updated as it starts within the next 24 hours. Please select a different time.");
 	        }
 
-	        // Update the booking details
+	     
 	        existingBooking.setBookingDateTime(booking.getBookingDateTime());
 	        existingBooking.setConfirmed(booking.isConfirmed());
 existingBooking.setBookingEnds(booking.getBookingDateTime().plusHours(booking.getHours()));
 existingBooking.getUser();
 
-	        // Check for booking conflicts before saving the updated booking
+	       
 	        if (isBookingConflict(existingBooking)) {
 	            throw new IllegalArgumentException("Booking conflict detected. Please select a different time.");
 	        }
 
-	        // Save the updated booking to the database
+	       
 	        existingBooking = bookingRepository.save(existingBooking);
 
-	        // Update the associated payment
+	  
 	        Payment payment = paymentRepository.findByBookingId(existingBooking.getId());
 	        if (payment != null) {
-	            // Update payment details, if necessary
-	            // For example: payment.setAmount(newPaymentAmount);
+	           
 	            paymentRepository.save(payment);
 	        }
 
@@ -191,11 +188,11 @@ existingBooking.getUser();
 
 
 	    public void deleteBooking(Long id) {
-	        // Check if the booking exists in the database
+	       
 	        Booking existingBooking = bookingRepository.findById(id)
 	                .orElseThrow(() -> new IllegalArgumentException("Booking not found with ID: " +id ));
 
-	        // Check if the booking start time is at least 24 hours from now
+	      
 	        LocalDateTime currentDateTime = LocalDateTime.now();
 	        LocalDateTime bookingStartDateTime = existingBooking.getBookingDateTime();
 	        long hoursDifference = ChronoUnit.HOURS.between(currentDateTime, bookingStartDateTime);
@@ -204,19 +201,19 @@ existingBooking.getUser();
 	            throw new IllegalArgumentException("LE PRENOTAZIONI POSSO ESSERE ELIMINATE ENTRO 24 PRIMA DELL'INIZIO");
 	        }
 
-	        // Delete the associated payment, if it exists
+	       
 	        Payment payment = paymentRepository.findByBookingId(id);
 	        if (payment != null) {
 	            paymentRepository.delete(payment);
 	       
 	        }
 	        bookingRepository.delete(existingBooking);
-	        // Delete the booking from the database
+	 
 	       
 	 
 	    }
 	    public void deleteBookingAdmin(Long bookingId) {
-	        // Check if the booking exists in the database
+	       
 	        Booking existingBooking = bookingRepository.findById(bookingId)
 	                .orElseThrow(() -> new IllegalArgumentException("Booking not found with ID: " + bookingId));
 
@@ -228,7 +225,7 @@ existingBooking.getUser();
 	            paymentRepository.delete(payment);
 	        }
 
-	        // Delete the booking from the database
+	      
 	        bookingRepository.delete(existingBooking);
 	 
 	    }
@@ -245,9 +242,7 @@ existingBooking.getUser();
 	    }
 
 	    
-	    //refund
-	    // Other methods for retrieving bookings based on different criteria can also be implemented here
-//ci dara i tasti rosso 
+
 	    private boolean isBookingConflict(Booking newBooking) {
 	        LocalDateTime bookingStart = newBooking.getBookingDateTime();
 	        LocalDateTime bookingEnd = newBooking.getBookingDateTime().plusHours(1);
@@ -256,7 +251,7 @@ existingBooking.getUser();
 	                newBooking.getCourt(), bookingEnd, bookingStart
 	        );
 
-	        // Check if there is any existing booking for the same court and overlapping date/time
+	       
 	        return !existingBookings.isEmpty();
 	    }
 	
@@ -277,7 +272,7 @@ existingBooking.getUser();
 	        
 	    }
 	    public List<Booking> getAllTennisBookings() {
-	        List<Booking> allBookings = bookingRepository.findAll(); // Assuming bookingRepository can retrieve all bookings from the database
+	        List<Booking> allBookings = bookingRepository.findAll(); 
 
 	        return allBookings.stream()
 	                .filter(booking -> {
@@ -287,8 +282,7 @@ existingBooking.getUser();
 	                .collect(Collectors.toList());
 	    }
 	    public List<Booking> getAllCalcettoBookings() {
-	        List<Booking> allBookings = bookingRepository.findAll(); // Assuming bookingRepository can retrieve all bookings from the database
-
+	        List<Booking> allBookings = bookingRepository.findAll(); 
 	        return allBookings.stream()
 	                .filter(booking -> {
 	                    Court court = booking.getCourt();
@@ -297,7 +291,7 @@ existingBooking.getUser();
 	                .collect(Collectors.toList());
 	    }
 	    public List<Booking> getAllBeachVolleyBookings() {
-	        List<Booking> allBookings = bookingRepository.findAll(); // Assuming bookingRepository can retrieve all bookings from the database
+	        List<Booking> allBookings = bookingRepository.findAll(); 
 
 	        return allBookings.stream()
 	                .filter(booking -> {
@@ -312,7 +306,8 @@ existingBooking.getUser();
 			e.setIsPaid(true);
 			p.setPaid(true);
 			bookingRepository.save(e);
-			paymentRepository.save(p)	;		return e;
+			paymentRepository.save(p)	;		
+			return e;
 		}
 	   
 
