@@ -1,4 +1,5 @@
 package com.CTC.controller.controller;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.CTC.entity.Booking;
 import com.CTC.entity.Payment;
+import com.CTC.entity.Receipt;
+import com.CTC.entity.Reviews;
+import com.CTC.entity.Role;
 import com.CTC.entity.User;
 import com.CTC.repository.repository.BookingRepository;
 import com.CTC.repository.repository.PaymentRepository;
 import com.CTC.service.EmailService;
 import com.CTC.service.service.PaymentService;
 import com.CTC.service.service.PaymentServiceImplementation;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.stripe.Stripe;
@@ -34,10 +39,18 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 @RestController
 @RequestMapping("/pay")
+@Data
+
 @CrossOrigin(origins = "*", maxAge = 6000000)
 public class PaymentController {
 

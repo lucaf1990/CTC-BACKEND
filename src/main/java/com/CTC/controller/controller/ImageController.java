@@ -2,9 +2,12 @@ package com.CTC.controller.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -21,12 +24,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.CTC.entity.Booking;
 import com.CTC.entity.Image;
+import com.CTC.entity.Payment;
+import com.CTC.entity.Receipt;
+import com.CTC.entity.Reviews;
+import com.CTC.entity.Role;
+import com.CTC.entity.User;
 import com.CTC.repository.repository.ImageRepository;
 import com.CTC.service.service.ImageService;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import org.springframework.core.io.Resource;
-
+@Data
+@Getter
+@Setter
+@Builder
 @RestController
 @RequestMapping("/api/images")
 @CrossOrigin(origins = "*", maxAge = 6000000)

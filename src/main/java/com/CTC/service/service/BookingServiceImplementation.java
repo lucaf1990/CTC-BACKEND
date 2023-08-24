@@ -59,6 +59,9 @@ public class BookingServiceImplementation implements BookingService{
 	        User user = userRepository.findById(bookingRequest.getUserId())
 	                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + authService.getCurrentUser().getId()));
 	        boolean isModerator = authService.isModerator(user.getId());
+	        
+	        String s= user.getScadenzaCertificato();
+	        
 	        BigDecimal totalToPay;
 	        if (isModerator) {
 	            totalToPay = totalToPay(court.getPriceSocio(), bookingRequest.getHours());

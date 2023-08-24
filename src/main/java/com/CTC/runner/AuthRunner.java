@@ -1,5 +1,6 @@
 package com.CTC.runner;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,15 +12,29 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.CTC.entity.Booking;
 import com.CTC.entity.ERole;
+import com.CTC.entity.Payment;
+import com.CTC.entity.Receipt;
+import com.CTC.entity.Reviews;
 import com.CTC.entity.Role;
+import com.CTC.entity.User;
 import com.CTC.payload.ChangePermissionsDto;
 import com.CTC.repository.RoleRepository;
 import com.CTC.repository.UserRepository;
 import com.CTC.service.AuthService;
 import com.CTC.service.AuthServiceImpl;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+@Data
+@Getter
+@Setter
+@Builder
 
 
 @Component

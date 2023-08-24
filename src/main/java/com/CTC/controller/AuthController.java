@@ -1,6 +1,8 @@
 package com.CTC.controller;
 
+import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +20,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.CTC.entity.Booking;
 import com.CTC.entity.ConfirmationTokenRequest;
 import com.CTC.entity.ERole;
 import com.CTC.entity.PasswordResetRequest;
+import com.CTC.entity.Payment;
+import com.CTC.entity.Receipt;
+import com.CTC.entity.Reviews;
+import com.CTC.entity.Role;
 import com.CTC.entity.User;
 import com.CTC.payload.JWTAuthResponse;
 import com.CTC.payload.LoginDto;
@@ -29,10 +36,18 @@ import com.CTC.repository.UserRepository;
 import com.CTC.service.AuthService;
 import com.CTC.service.AuthServiceImpl;
 import com.CTC.service.EmailService;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+@Data
+@Getter
+@Setter
 
 
 

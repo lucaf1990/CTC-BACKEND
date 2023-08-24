@@ -1,22 +1,39 @@
 package com.CTC.service.service;
 
+import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.CTC.entity.Booking;
 import com.CTC.entity.Court;
+import com.CTC.entity.Payment;
+import com.CTC.entity.Receipt;
+import com.CTC.entity.Reviews;
+import com.CTC.entity.Role;
+import com.CTC.entity.User;
 import com.CTC.enums.CourtType;
 import com.CTC.enums.TypeField;
 import com.CTC.exception.InvalidCourtDataException;
 import com.CTC.exception.MyAPIException;
 import com.CTC.payload.CourtDTO;
 import com.CTC.repository.repository.CourtRepository;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+@Data
+@Getter
+@Setter
+@Builder
 
 
 @Service

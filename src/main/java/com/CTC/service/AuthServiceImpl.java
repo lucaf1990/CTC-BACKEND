@@ -1,6 +1,7 @@
 package com.CTC.service;
 
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +23,8 @@ import com.CTC.entity.Booking;
 import com.CTC.entity.ERole;
 import com.CTC.entity.Image;
 import com.CTC.entity.Payment;
+import com.CTC.entity.Receipt;
+import com.CTC.entity.Reviews;
 import com.CTC.entity.Role;
 import com.CTC.entity.User;
 import com.CTC.exception.MyAPIException;
@@ -35,6 +38,15 @@ import com.CTC.repository.repository.ImageRepository;
 import com.CTC.repository.repository.PaymentRepository;
 import com.CTC.security.JwtTokenProvider;
 import com.CTC.service.service.ImageService;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+@Data
+@Getter
+@Setter
 
 
 @Service
@@ -166,8 +178,7 @@ private ImageRepository imageRepo;
         userToUpdate.setUserName(updatedUser.getUserName());
         userToUpdate.setActive(updatedUser.getActive());
         userToUpdate.setIsMember(updatedUser.getIsMember());
-
-    
+        userToUpdate.setScadenzaCertificato(updatedUser.getScadenzaCertificato());
       
         userToUpdate.setRoles(updatedUser.getRoles());
 

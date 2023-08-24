@@ -60,6 +60,7 @@ private Boolean emailConfirmed;
     private Boolean isMember;
     @Column(nullable = false)
 private String phoneNumber;
+    private String scadenzaCertificato;
     private LocalDate dateOfBirth;
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = "user")
