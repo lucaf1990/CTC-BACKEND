@@ -35,7 +35,7 @@ RESTful API architecture for smooth communication.
 Utilizing PostgreSQL to store user data, bookings, and payments.
 Installation
 
-Clone the repository: git clone https://github.com/your-username/tennis-court-booking.git
+
 Navigate to the project directory: cd tennis-court-booking
 Install frontend dependencies: cd frontend && npm install
 Install backend dependencies: cd backend && mvn install
