@@ -67,7 +67,7 @@ public class UserController {
 	 @PutMapping("/update/{id}")
 	    public ResponseEntity<User> updateUserAndRoles(
 	            @RequestBody User updatedUser,
-	            @RequestParam Long id
+	            @PathVariable Long id
 	        ) {
 	        User updated = uSer.updateUserDataAndPermissions(id,updatedUser);
 	        return ResponseEntity.ok(updated);
