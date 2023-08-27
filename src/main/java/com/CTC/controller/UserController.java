@@ -64,13 +64,23 @@ public class UserController {
 	public ResponseEntity<?> updateUtenteImage(@PathVariable Long id,@RequestParam("file") MultipartFile file){
 		return new ResponseEntity<User>(uSer.updateUtenteImage(id, file),HttpStatus.OK);
 	}
+	
 	 @PutMapping("/update/{id}")
-	    public ResponseEntity<User> updateUserAndRoles(
+	    public ResponseEntity<User> updateUser(
 	            @RequestBody User updatedUser,
 	            @PathVariable Long id
+	
 	        ) {
 	        User updated = uSer.updateUserDataAndPermissions(id,updatedUser);
 	        return ResponseEntity.ok(updated);
 	    }
-
+	 @GetMapping("/get")
+	    public ResponseEntity<User> getSecret(
+	    		@RequestBody User updatedUser,
+	            @RequestParam Long id
+	
+	        ) {
+	        User updated = uSer.findById(id);
+	        return ResponseEntity.ok(updated);
+	    }
 }

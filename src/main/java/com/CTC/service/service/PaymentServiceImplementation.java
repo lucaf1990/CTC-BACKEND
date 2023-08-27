@@ -43,7 +43,7 @@ public class PaymentServiceImplementation implements PaymentService{
 
 	        Payment payment = new Payment();
 	        payment.setBooking(booking);
-	 payment.setUtenteId(booking.getUser().getId());
+	 payment.setUser(booking.getUser());
 	
 	        payment.setAmount(booking.getTotalToPay()); 
 	        payment.setPaymentDateTime(LocalDateTime.now()); 
